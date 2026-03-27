@@ -2,6 +2,7 @@
 import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { apiRequest } from '@/lib/api';
+import { AuthResponse } from '@/lib/types';
 
 export default function RegisterPage() {
     const [username, setUsername] = useState<string>("");
@@ -13,7 +14,7 @@ export default function RegisterPage() {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
         try {
-            const data = await apiRequest("/api/auth/register", "POST", {
+            const data: AuthResponse = await apiRequest("/api/auth/register", "POST", {
                 username,
                 email,
                 password

@@ -2,6 +2,7 @@
 import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { apiRequest } from '@/lib/api';
+import { Player, UserResponse, AuthResponse } from '@/lib/types';
 
 export default function LoginPage() {
     const [email, setEmail] = useState<string>("");
@@ -12,12 +13,23 @@ export default function LoginPage() {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
         try {
-            const data = await apiRequest("/api/auth/login", "POST", {
+            const data: AuthResponse = await apiRequest("/api/auth/login", "POST", {
                 email,
                 password
             })
             localStorage.setItem('JWT', data.token);
-            router.push("/connect");
+
+            const data2: UserResponse = await apiRequest("/api/auth/me", "GET");
+
+            //We are assuming one clash royale account per player. add multi account support some other time
+            const { players } = data2;
+
+            if (players.length > 0) {
+                router.push("/coach");
+            } else {
+                router.push("/connect");
+            }
+
         } catch (error) {
             setError('Login failed. Please try again.')
             console.error(error);
